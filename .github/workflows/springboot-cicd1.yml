@@ -111,16 +111,30 @@ jobs:
             # 1. 배포 경로로 이동
             cd ${{ env.DEPLOY_PATH }}   
             
-            # 2. Docker Hub에 로그인
-            echo "Logging in to Docker Hub..."
-            docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+            # 2. Docker Compose 명령어 자동 판별 (v2 'docker compose' vs v1 'docker-compose')
+            if docker compose version > /dev/null 2>&1; then
+              COMPOSE_CMD="docker compose"
+            else
+              COMPOSE_CMD="docker-compose"
+            fi
+            echo "Using compose command: $COMPOSE_CMD"
             
-            # 3. 최신 이미지 Pull 및 컨테이너 재시작
+            # 3. Docker Hub에 로그인
+            echo "Logging in to Docker Hub..."
+            docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN || secrets.DOCKERHUB_PASSWORD || secrets.DOCKER_PASSWORD || secrets.DOCKER_TOKEN }}
+            
+            # 4. 최신 이미지 Pull 및 컨테이너 재시작
             echo "Pulling latest image and restarting containers..."
-            # docker-compose.yml이 최신으로 업데이트되었으므로 바로 up 명령을 실행
-            docker-compose down # 기존 컨테이너 중지 및 삭제 (선택적: 빠른 재배포 시 유용)
+            $COMPOSE_CMD down
             docker rmi ${{ env.IMAGE_NAME }}:latest || true
-            docker-compose pull
-            docker-compose up -d --force-recreate --build # 최신 이미지로 재구동
+            $COMPOSE_CMD pull
+            $COMPOSE_CMD up -d --force-recreate
+            
+            # 5. 기동 대기 및 로그 확인
+            echo "Waiting for Spring Boot to start..."
+            sleep 15
+            $COMPOSE_CMD ps
+            echo "=== Spring Boot Container Logs ==="
+            $COMPOSE_CMD logs --tail=40 app
             
             echo "Deployment to EC2 complete!"

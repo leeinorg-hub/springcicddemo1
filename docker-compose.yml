@@ -38,17 +38,16 @@ services:
     restart: always
 
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/edudb
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/edudb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: jdbctest
       SPRING_DATASOURCE_PASSWORD: jdbctest
 
     ports:
       - "8888:8888"
 
-    # 'db' 서비스가 완전히 실행된 후 'app' 서비스가 시작되도록 보장
+    # 'db' 서비스 구동 후 'app' 서비스 시작
     depends_on:
-      db:
-        condition: service_healthy
+      - db
 
 # 데이터 영속성을 위한 볼륨 정의
 volumes:
