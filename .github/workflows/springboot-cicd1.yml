@@ -166,11 +166,14 @@ jobs:
             # 7. 기동 대기 및 로그 확인
             echo "Waiting for Spring Boot to start..."
             sleep 25
-            echo "=== Containers Status ==="
-            $COMPOSE_CMD ps -a
-            echo "=== Spring Boot Container Logs ==="
-            $COMPOSE_CMD logs --tail=100 app
-            echo "=== MySQL Container Logs ==="
-            $COMPOSE_CMD logs --tail=50 db
+            # 8. 포트 점검 및 EC2 내부/외부 통신 테스트
+            sudo sysctl -w net.ipv4.ip_forward=1 || true
+            echo "=== Checking Listen Ports on EC2 ==="
+            sudo ss -tulpn | grep 8888 || sudo netstat -tlpn | grep 8888 || true
+            echo "=== Localhost Curl Test ==="
+            curl -i http://localhost:8888/hello || true
+            echo "=== Current EC2 Public IP ==="
+            curl -s http://checkip.amazonaws.com || true
+            echo ""
             
             echo "Deployment to EC2 complete!"
