@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'adopt' # <--- distribution이 'adopt' 등으로 변경되었습니다.
+          distribution: 'temurin' # Dockerfile의 eclipse-temurin 이미지와 일치
           cache: 'gradle'
 
       # 3. Gradle Wrapper 실행 권한 부여
@@ -118,7 +118,7 @@ jobs:
             echo "Pulling latest image and restarting containers..."
             # docker-compose.yml이 최신으로 업데이트되었으므로 바로 up 명령을 실행
             docker-compose down # 기존 컨테이너 중지 및 삭제 (선택적: 빠른 재배포 시 유용)
-            docker rmi ${{ env.IMAGE_NAME }}:latest
+            docker rmi ${{ env.IMAGE_NAME }}:latest || true
             docker-compose pull
             docker-compose up -d --force-recreate --build # 최신 이미지로 재구동
             
