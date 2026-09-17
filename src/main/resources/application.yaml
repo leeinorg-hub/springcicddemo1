@@ -1,8 +1,14 @@
 server:
-  port: 8088
+  port: 8888
 spring:
   application:
     name: springcicddemo1
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/edudb}
+    username: ${SPRING_DATASOURCE_USERNAME:jdbctest}
+    password: ${SPRING_DATASOURCE_PASSWORD:jdbctest}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   docker:
     compose:
@@ -17,7 +23,6 @@ spring:
       hibernate:
         format_sql: true
     database: mysql
-    database-platform: org.hibernate.dialect.MySQL8Dialect
 
 logging:
   level:
