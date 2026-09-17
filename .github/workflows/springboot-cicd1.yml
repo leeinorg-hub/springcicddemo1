@@ -128,9 +128,10 @@ jobs:
             # Docker 데몬 시작 및 권한 부여
             sudo systemctl enable --now docker
             sudo usermod -aG docker ${{ env.EC2_USER }} || true
+            sudo chmod 666 /var/run/docker.sock || true
 
             # 2. Docker Compose가 설치되어 있지 않은 경우 자동 설치
-            if ! docker compose version > /dev/null 2>&1 && ! command -v docker-compose &> /dev/null; then
+            if ! sudo docker compose version > /dev/null 2>&1 && ! command -v docker-compose &> /dev/null; then
               echo "Docker Compose not found. Installing Docker Compose on EC2..."
               sudo mkdir -p /usr/local/lib/docker/cli-plugins
               sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-$(uname -m) -o /usr/local/lib/docker/cli-plugins/docker-compose
@@ -143,13 +144,9 @@ jobs:
             mkdir -p ${{ env.DEPLOY_PATH }}
             cd ${{ env.DEPLOY_PATH }}   
             
-            # 4. Docker Compose 명령어 자동 판별
-            if docker compose version > /dev/null 2>&1; then
-              COMPOSE_CMD="docker compose"
-            elif sudo docker compose version > /dev/null 2>&1; then
+            # 4. Docker Compose 명령어 자동 판별 (sudo 적용)
+            if sudo docker compose version > /dev/null 2>&1; then
               COMPOSE_CMD="sudo docker compose"
-            elif command -v docker-compose &> /dev/null; then
-              COMPOSE_CMD="docker-compose"
             else
               COMPOSE_CMD="sudo docker-compose"
             fi
@@ -168,7 +165,7 @@ jobs:
             
             # 7. 기동 대기 및 로그 확인
             echo "Waiting for Spring Boot to start..."
-            sleep 15
+            sleep 20
             $COMPOSE_CMD ps
             echo "=== Spring Boot Container Logs ==="
             $COMPOSE_CMD logs --tail=50 app
