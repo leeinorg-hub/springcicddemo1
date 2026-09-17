@@ -33,7 +33,7 @@ services:
 
   # 2. Spring Boot 애플리케이션 서비스
   app:
-    image: unico67/cicdtest1:latest
+    image: leemyonghoon/cicdtest1:latest
     container_name: spring-boot-app
 
     environment:

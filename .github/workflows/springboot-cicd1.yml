@@ -6,10 +6,10 @@ on:
   workflow_dispatch: # GitHub 웹 Actions 탭에서 수동으로 'Run workflow' 버튼으로 실행 가능하도록 추가
 
 env:
-  # Docker Hub 계정 정보 (GitHub Secrets에 등록된 값 사용, 없으면 레포지토리 소유자명 사용)
-  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || 'leeinorg-hub' }}
+  # Docker Hub 계정 정보
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || 'leemyonghoon' }}
   # 최종 도커 이미지 이름
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME || 'leeinorg-hub' }}/cicdtest1
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME || 'leemyonghoon' }}/cicdtest1
   # Spring Boot 프로젝트의 JAR 파일 이름 (Dockerfile의 ARG와 일치)
   JAR_NAME: springcicddemo1.jar
   EC2_HOST: ${{ secrets.EC2_HOST }}
