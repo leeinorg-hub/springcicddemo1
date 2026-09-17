@@ -3,12 +3,13 @@ name: Spring Boot Build and Docker Push to Hub and Deploy to EC2
 on:
   push:
     branches: [ main ]
+  workflow_dispatch: # GitHub 웹 Actions 탭에서 수동으로 'Run workflow' 버튼으로 실행 가능하도록 추가
 
 env:
-  # Docker Hub 계정 정보 (GitHub Secrets에 저장된 값을 사용)
-  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  # 최종 도커 이미지 이름 (Docker Hub 저장소 경로: unico67/cicdtest1)
-  IMAGE_NAME: leeinorg-hub/cicdtest1
+  # Docker Hub 계정 정보 (GitHub Secrets에 등록된 값 사용, 없으면 레포지토리 소유자명 사용)
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || 'leeinorg-hub' }}
+  # 최종 도커 이미지 이름
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME || 'leeinorg-hub' }}/cicdtest1
   # Spring Boot 프로젝트의 JAR 파일 이름 (Dockerfile의 ARG와 일치)
   JAR_NAME: springcicddemo1.jar
   EC2_HOST: ${{ secrets.EC2_HOST }}
@@ -46,7 +47,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKERHUB_TOKEN || secrets.DOCKERHUB_PASSWORD || secrets.DOCKER_PASSWORD || secrets.DOCKER_TOKEN }}
 
       # 6. Docker 이미지의 태그 설정 및 Buildx 설정
       - name: Set up Docker Buildx
