@@ -8,8 +8,8 @@ on:
 env:
   # Docker Hub 계정 정보
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || 'leemyonghoon' }}
-  # 최종 도커 이미지 이름
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME || 'leemyonghoon' }}/cicdtest1
+  # 최종 도커 이미지 이름 (프로젝트명과 일치)
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME || 'leemyonghoon' }}/springcicddemo1
   # Spring Boot 프로젝트의 JAR 파일 이름 (Dockerfile의 ARG와 일치)
   JAR_NAME: springcicddemo1.jar
   EC2_HOST: ${{ secrets.EC2_HOST }}
